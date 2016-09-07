@@ -1,5 +1,10 @@
 function TableExport(element) {
 
+    if (!(this instanceof TableExport)) {
+        // new 생성자를 사용하여 생성하도록 강제한다.
+        throw "new 생성자를 이용해 주세요 :(";
+    }
+
     var table = {
         rows: [],
         meta: []
@@ -84,5 +89,42 @@ function TableExport(element) {
         throw "인자 값으로 입력되는 엘리먼트는 테이블 엘리먼트이어야만 합니다 :("
     }
 
-    return table;
+    this.toArray = function () {
+        // 데이터를 배열로 리턴한다.
+        return table.rows.slice();
+    };
+
+    this.toCSVdata = function (rows) {
+        // CSV 포맷으로 변경하여 리턴
+        var data = '';
+        rows = rows || table.rows;
+        for (var i = 0, ilen = rows.length, row; row = rows[i], i < ilen; i++) {
+
+            for (var k = 0, klen = row.length, cell; cell = row[k], k < klen; k++) {
+
+                data += cell.indexOf(',') !== -1 ? '"' + cell + '"' : cell;
+
+                if (k !== klen - 1) {
+
+                    data += ','
+                }
+            }
+            data += '\r\n';
+        }
+        return 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(data);
+    };
+
+    this.download = function (data, filename) {
+        // 다운로드를 실행할 엘리먼트를 메모리에 생성하고 동작시킨다.
+        var anchor = document.createElement('a');
+        anchor.setAttribute('href', data);
+        anchor.setAttribute('download', filename);
+        anchor.click();
+        // 지원여부
+        return 'download' in anchor;
+    }
 }
+
+
+var q = new TableExport(document.getElementsByClassName('pvtTable')[0]);
+q.asCSV();
