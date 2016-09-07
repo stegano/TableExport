@@ -46,7 +46,7 @@ function TableExport(element) {
                 }
             }
         }
-
+        // `colspan`, `rowspan` 데이터를 이용하여 빈 공간을 채움.
         for (var i = 0; i < table.meta.length; i++) {
 
             for (var k = 0; k < table.meta[i].length; k++) {
