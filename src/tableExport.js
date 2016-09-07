@@ -124,7 +124,3 @@ function TableExport(element) {
         return 'download' in anchor;
     }
 }
-
-
-var q = new TableExport(document.getElementsByClassName('pvtTable')[0]);
-q.asCSV();
