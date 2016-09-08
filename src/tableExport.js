@@ -1,4 +1,4 @@
-function TableExport(element) {
+function TableExport(element, options) {
 
     if (!(this instanceof TableExport)) {
         // new 생성자를 사용하여 생성하도록 강제한다.
@@ -14,6 +14,10 @@ function TableExport(element) {
         rows: [],
         metadata: []
     };
+
+    // `options`에 들어간 기본 값을 생성한다.
+    options = !options ? {mergeCell: {}} : options;
+    options.mergeCell.fill = !options.mergeCell.fill ? true : options.mergeCell.fill;
 
     // 테이블 생성
     for (var i = 0, tr, trs = element.children, ilen = trs.length; tr = trs[i], i < ilen; i++) {
@@ -55,6 +59,7 @@ function TableExport(element) {
             }
         }
     }
+
     // `colspan`, `rowspan` 데이터를 이용하여 빈 공간을 채움.
     for (var i = 0; i < table.metadata.length; i++) {
 
@@ -64,25 +69,32 @@ function TableExport(element) {
 
             if (span.colspan > 1) {
                 // `colspan` 개수만큼 셀에 데이터를 복사한다.
-                var tail = table.rows[i].splice(k + 1);
+                var rtail = table.rows[i].splice(k + 1);
+                var mtail = table.metadata[i].splice(k + 1);
+
 
                 for (var j = 1; j < span.colspan; j++) {
 
-                    table.rows[i].push(table.rows[i][k]);
+                    table.rows[i].push(options.mergeCell.fill === true ? table.rows[i][k] : options.mergeCell.fill);
+                    table.metadata[i].push({colspan: 0, rowspan: 0});
                 }
 
-                table.rows[i].push.apply(table.rows[i], tail);
+                table.rows[i].push.apply(table.rows[i], rtail);
+                table.metadata[i].push.apply(table.metadata[i], mtail);
             }
 
             if (span.rowspan > 1) {
                 // `rowspan` 개수만큼 셀에 데이터를 복사한다.
-                for (var tail, j = 1; j < span.rowspan; j++) {
+                for (var j = 1; j < span.rowspan; j++) {
 
-                    tail = table.rows[i + j].splice(k);
+                    rtail = table.rows[i + j].splice(k);
+                    mtail = table.metadata[i + j].splice(k);
 
                     table.rows[i + j].push(table.rows[i][k]);
+                    table.metadata[i + j].push({colspan: 0, rowspan: 0});
 
-                    table.rows[i + j].push.apply(table.rows[i + j], tail);
+                    table.rows[i + j].push.apply(table.rows[i + j], rtail);
+                    table.metadata[i + j].push.apply(table.metadata[i + j], mtail);
                 }
             }
         }
