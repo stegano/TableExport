@@ -17,7 +17,7 @@ function TableExport(element, options) {
 
     // `options`에 들어간 기본 값을 생성한다.
     options = !options ? {mergeCell: {}} : options;
-    options.mergeCell.fill = !options.mergeCell.fill ? true : options.mergeCell.fill;
+    options.mergeCell.fill = options.mergeCell.fill === undefined ? true : options.mergeCell.fill;
 
     // 테이블 생성
     for (var i = 0, tr, trs = element.children, ilen = trs.length; tr = trs[i], i < ilen; i++) {
@@ -65,6 +65,7 @@ function TableExport(element, options) {
 
         for (var k = 0; k < table.metadata[i].length; k++) {
 
+            var fill = options.mergeCell.fill === true ? table.rows[i][k] : options.mergeCell.fill;
             var span = table.metadata[i][k];
 
             if (span.colspan > 1) {
@@ -75,7 +76,7 @@ function TableExport(element, options) {
 
                 for (var j = 1; j < span.colspan; j++) {
 
-                    table.rows[i].push(options.mergeCell.fill === true ? table.rows[i][k] : options.mergeCell.fill);
+                    table.rows[i].push(fill);
                     table.metadata[i].push({colspan: 0, rowspan: 0});
                 }
 
@@ -90,7 +91,7 @@ function TableExport(element, options) {
                     rtail = table.rows[i + j].splice(k);
                     mtail = table.metadata[i + j].splice(k);
 
-                    table.rows[i + j].push(table.rows[i][k]);
+                    table.rows[i + j].push(fill);
                     table.metadata[i + j].push({colspan: 0, rowspan: 0});
 
                     table.rows[i + j].push.apply(table.rows[i + j], rtail);
