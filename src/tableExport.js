@@ -157,7 +157,6 @@ var TableExport = function (element, options) {
             }
             data += '\r\n';
         }
-        console.log(data);
         return 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(data);
     };
 
