@@ -93,7 +93,6 @@ var TableExport = function (element, options) {
           var rtail = ret.rows[i].splice(k + 1);
           var mtail = ret.metadata[i].splice(k + 1);
 
-
           for (var j = 1; j < span.colspan; j++) {
 
             ret.rows[i].push(fill);
@@ -112,10 +111,25 @@ var TableExport = function (element, options) {
             mtail = ret.metadata[i + j].splice(k);
 
             ret.rows[i + j].push(fill);
-            ret.metadata[i + j].push({type: ret.rows[i][k].nodeName, colspan: 0, rowspan: 0});
+            ret.metadata[i + j].push({type: ret.rows[i][k].nodeName, colspan: span.colspan, rowspan: 0});
 
             ret.rows[i + j].push.apply(ret.rows[i + j], rtail);
             ret.metadata[i + j].push.apply(ret.metadata[i + j], mtail);
+
+            if (j > 1 && span.colspan > 1) {
+              // `colspan` 개수만큼 셀에 데이터를 복사한다.
+              var rtail = ret.rows[i + j].splice(k + 1);
+              var mtail = ret.metadata[i + j].splice(k + 1);
+
+              for (var j = 1; j < span.colspan; j++) {
+
+                ret.rows[i + j].push(fill);
+                ret.metadata[i + j].push({type: ret.rows[i + j][k].nodeName, colspan: 0, rowspan: 0});
+              }
+
+              ret.rows[i + j].push.apply(ret.rows[i + j], rtail);
+              ret.metadata[i + j].push.apply(ret.metadata[i + j], mtail);
+            }
           }
         }
       }
